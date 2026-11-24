@@ -1,0 +1,49 @@
+name: Atualizar devedores da União
+
+on:
+  schedule:
+    - cron: "41 14 * * 1"   # toda segunda, 11:41 (Brasília): confere se a PGFN publicou trimestre novo
+  workflow_dispatch:
+    inputs:
+      forcar:
+        description: "Refazer mesmo sem trimestre novo (sim/não)"
+        required: false
+        default: "não"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-devedores
+  cancel-in-progress: false
+
+jobs:
+  rodar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Testes
+        run: python -m pytest -q
+      - name: Coletar na PGFN e montar o site
+        run: python atualizar.py ${{ github.event.inputs.forcar == 'sim' && '--forcar' || '' }}
+      - name: Publicar
+        if: always()
+        run: |
+          git config user.name  "robo-quanto-custa"
+          git config user.email "actions@users.noreply.github.com"
+          mkdir -p docs/dados
+          git add docs/dados
+          if ! git diff --cached --quiet; then
+            git commit -m "devedores: dados de $(date -u +%Y-%m-%d)"
+            for i in 1 2 3 4 5; do
+              git pull --rebase -X ours origin main || true
+              if git push; then break; fi
+              sleep $((i*20)); [ $i = 5 ] && exit 1
+            done
+          fi
