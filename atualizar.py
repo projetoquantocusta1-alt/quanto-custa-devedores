@@ -16,7 +16,7 @@ from pathlib import Path
 
 import requests
 
-from coletor import pgfn
+from coletor import cruzamento, pgfn
 from coletor.privacidade import mascarar_cpf_no_texto
 
 DADOS = Path(__file__).parent / "docs" / "dados"
@@ -101,6 +101,56 @@ def linha_emp(ag, rz, valor_uf=None):
     return out
 
 
+CAMPOS_CRUZ = ["raiz", "cnpj", "nome", "uf", "total", "cobranca", "negociada", "garantida", "suspensa", "ajuizado", "recebido"] + cruzamento.FONTES
+
+
+def cruzar(ag: pgfn.Agregador, fontes: Path, tri: str) -> dict:
+    """Empresas devedoras (todas, não só as maiores) que receberam dinheiro público nas fontes do Quanto Custa."""
+    R = cruzamento.Recebimentos()
+    situacao = {}
+    for nome, f in (("emendas", lambda: R.ler_emendas(S.get(cruzamento.EMENDAS_ZIP, timeout=900).content)),
+                    ("deputados", lambda: R.ler_deputados(fontes / "deputados" / "docs" / "dados")),
+                    ("senadores", lambda: R.ler_senadores(fontes / "senadores" / "docs" / "dados")),
+                    ("estaduais", lambda: R.ler_estaduais(fontes / "estaduais" / "docs" / "dados")),
+                    ("municipios", lambda: R.ler_municipios(fontes / "municipios" / "docs" / "dados"))):
+        t0 = time.time()
+        try:
+            f()
+            situacao[nome] = "ok"
+        except Exception as e:  # noqa: BLE001
+            situacao[nome] = f"falhou: {str(e)[:150]}"
+        print(f"  cruzamento {nome}: {situacao[nome]} ({time.time() - t0:.0f} s, {len(R.d)} empresas até aqui)")
+    linhas, detalhes = [], {}
+    for rz, por_fonte in R.d.items():
+        e = ag.emp.get(rz)
+        if not e:
+            continue
+        res = R.resumo_de(rz)
+        rec = sum(x["v"] for x in res.values())
+        ufs = ag.uf_emp.get(rz, {})
+        linhas.append([rz, ag.cnpj.get(rz, ""), mascarar_cpf_no_texto(ag.nome.get(rz, "")), max(ufs, key=ufs.get) if ufs else "",
+                       round(e[0]), round(e[4]), round(e[5]), round(e[6]), round(e[7]), round(e[9]), round(rec)] +
+                      [round(res[f]["v"]) if f in res else 0 for f in cruzamento.FONTES])
+        detalhes.setdefault(rz[:2], {})[rz] = {f: {**x, "quem": [[mascarar_cpf_no_texto(q), v] for q, v in x["quem"]]} for f, x in res.items()}
+    linhas.sort(key=lambda l: -l[4])
+    tot = {"empresas": len(linhas), "divida": sum(l[4] for l in linhas), "cobranca": sum(l[5] for l in linhas), "recebido": sum(l[10] for l in linhas),
+           "por_fonte": {f: [sum(l[11 + i] for l in linhas), sum(1 for l in linhas if l[11 + i])] for i, f in enumerate(cruzamento.FONTES)},
+           "fornecedores_lidos": len(R.d), "situacao": situacao}
+    # no site: as 2.500 maiores dívidas + os 2.500 que mais receberam (a ficha de qualquer outra continua em cruz/XX.json)
+    sel = {l[0] for l in linhas[:2500]} | {l[0] for l in sorted(linhas, key=lambda l: -l[10])[:2500]}
+    tot["no_site"] = len(sel)
+    gravar("cruzamento.json", {"trimestre": tri, "gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"), "totais": tot,
+                               "campos": CAMPOS_CRUZ, "linhas": [l for l in linhas if l[0] in sel]})
+    pasta = DADOS / "cruz"
+    pasta.mkdir(parents=True, exist_ok=True)
+    for p in pasta.glob("*.json"):
+        p.unlink()
+    for k, v in detalhes.items():
+        (pasta / f"{k}.json").write_text(json.dumps(v, ensure_ascii=False, separators=(",", ":")), "utf-8")
+    print("cruzamento:", json.dumps({k: v for k, v in tot.items()}, ensure_ascii=False))
+    return {k: tot[k] for k in ("empresas", "situacao")}
+
+
 CAMPOS = ["raiz", "cnpj", "nome", "uf", "total", "sida", "prev", "fgts", "cobranca", "negociada", "garantida", "suspensa", "outra", "ajuizado", "inscricoes"]
 
 
@@ -109,7 +159,9 @@ def main():
     meta = ler("meta.json") or {}
     tri = pgfn.ultimo_trimestre(S.get(pgfn.BASE, timeout=60).text)
     print("trimestre mais recente na PGFN:", tri)
-    if tri == meta.get("trimestre") and not forcar:
+    # roda toda semana: a Dívida Ativa muda a cada trimestre, mas emendas e notas fiscais mudam todo dia (cruzamento)
+    fontes = Path(sys.argv[sys.argv.index("--fontes") + 1]) if "--fontes" in sys.argv else None
+    if tri == meta.get("trimestre") and not forcar and not fontes:
         print("nada novo")
         return
     TMP.mkdir(parents=True, exist_ok=True)
@@ -137,6 +189,13 @@ def main():
                "ufs": {uf: [linha_emp(ag, rz, v) for v, rz in sorted(l, reverse=True)[:TOP_UF]] for uf, l in por_uf.items()}}
     resumo["top10"] = {"campos": CAMPOS, "linhas": empresas["linhas"][:10]}   # o início abre sem baixar o ranking inteiro
     gravar("resumo.json", resumo)
+    if fontes:
+        try:
+            meta["cruzamento"] = cruzar(ag, fontes, tri)
+        except Exception as e:  # noqa: BLE001
+            import traceback
+            traceback.print_exc()
+            meta["cruzamento"] = {"erro": str(e)[:300]}
     gravar("empresas.json", empresas)
     gravar("estados.json", estados)
     meta.update({"trimestre": tri, "gerado_em": resumo["gerado_em"], "fonte": pgfn.BASE + tri + "/"})

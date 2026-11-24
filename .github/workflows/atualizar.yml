@@ -2,7 +2,7 @@ name: Atualizar devedores da União
 
 on:
   schedule:
-    - cron: "41 14 * * 1"   # toda segunda, 11:41 (Brasília): confere se a PGFN publicou trimestre novo
+    - cron: "41 14 * * 1"   # toda segunda, 11:41 (Brasília): Dívida Ativa + cruzamento com emendas e notas fiscais
   workflow_dispatch:
     inputs:
       forcar:
@@ -30,8 +30,20 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Testes
         run: python -m pytest -q
-      - name: Coletar na PGFN e montar o site
-        run: python atualizar.py ${{ github.event.inputs.forcar == 'sim' && '--forcar' || '' }}
+      - name: Baixar os fornecedores dos outros sites do Quanto Custa (só as pastas necessárias)
+        run: |
+          F="$RUNNER_TEMP/fontes"; mkdir -p "$F"
+          pega() {  # repositório, pasta de destino, padrões
+            git clone -q --depth 1 --filter=blob:none --no-checkout "https://github.com/projetoquantocusta1-alt/$1" "$F/$2"
+            (cd "$F/$2" && git sparse-checkout set --no-cone "${@:3}" && git checkout -q)
+          }
+          pega quanto-custa-deputados deputados '/docs/dados/*/fornecedores/' '/docs/dados/*/resumo.json'
+          pega quanto-custa-senadores senadores '/docs/dados/*/fornecedores.json' '/docs/dados/*/resumo.json'
+          pega quanto-custa-deputados-estaduais estaduais '/docs/dados/*/*/fornecedores.json'
+          pega quanto-custa-municipios municipios '/docs/dados/f/' '/docs/dados/resumo.json'
+          du -sh "$F"/*
+      - name: Coletar na PGFN, cruzar e montar o site
+        run: python atualizar.py --fontes "$RUNNER_TEMP/fontes" ${{ github.event.inputs.forcar == 'sim' && '--forcar' || '' }}
       - name: Publicar
         if: always()
         run: |
