@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Devedores da União — Quanto Custa</title>
+<link rel="icon" href="marca/favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://quantocustaum.com/quanto-custa-devedores/">
+<meta property="og:title" content="Quem deve à União — Quanto Custa">
+<meta property="og:description" content="Quem deve ao governo federal: a Dívida Ativa da União por empresa, estado, tipo de dívida e situação (em cobrança, parcelada, com garantia ou suspensa). Dados oficiais da PGFN.">
+<meta property="og:image" content="https://quantocustaum.com/og.png">
+<meta property="og:url" content="https://quantocustaum.com/quanto-custa-devedores/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="Quem deve ao governo federal: a Dívida Ativa da União por empresa, estado, tipo de dívida e situação (em cobrança, parcelada, com garantia ou suspensa). Dados oficiais da PGFN.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+<link rel="stylesheet" href="tema.css?v=1">
+<link rel="stylesheet" href="devedores.css?v=1">
+<link rel="stylesheet" href="marca/tokens.css?v=1">
+<link rel="stylesheet" href="marca/marca.css?v=1">
+</head>
+<body>
+<aside class="menu" id="menu" aria-label="Menu">
+  <a class="marca" href="https://quantocustaum.com/" title="Voltar ao início do Quanto Custa"><span class="marca-col"><img class="marca-logo" src="marca/logo-horizontal-negativo.svg" alt="Quanto Custa?" width="164" height="30"><small class="marca-sub">Devedores da União</small></span></a>
+  <nav>
+    <a class="hub-link" href="https://quantocustaum.com/" title="Voltar ao início do Quanto Custa">← Todas as esferas</a>
+    <button data-pag="inicio">Início</button>
+    <button data-pag="empresas">Empresas</button>
+    <button data-pag="estados">Estados</button>
+    <div class="grupo"><span class="grupo-rot" tabindex="0">A dívida</span><div class="grupo-itens">
+      <button data-pag="tipos">Tipos de dívida</button>
+      <button data-pag="situacao">Situação da cobrança</button>
+    </div></div>
+    <button data-pag="dava">O que dava pra fazer?</button>
+    <button data-pag="metodo">Metodologia</button>
+  </nav>
+  <p class="menu-rodape" id="atualizado"></p>
+</aside>
+<div class="veu" id="veu" hidden></div>
+
+<div class="conteudo">
+  <header class="topo-movel">
+    <button class="hamburguer" id="abrir-menu" aria-label="Abrir menu" aria-controls="menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <span class="topo-marca"><img class="marca-logo" src="marca/logo-horizontal-negativo.svg" alt="Quanto Custa?" width="131" height="24"><small>Devedores da União</small></span>
+    <a class="hub-link topo" href="https://quantocustaum.com/">← Início</a>
+  </header>
+  <p class="aviso" id="aviso" hidden></p>
+
+  <main>
+    <!-- INÍCIO -->
+    <section class="pagina" data-pag="inicio">
+      <div class="destaque">
+        <div class="visitas-linha" data-visitas hidden><span class="visitas"><span class="vis-ponto" aria-hidden="true"></span><b>—</b> visitas ao Quanto Custa</span></div>
+        <p class="selo">Transparência independente · dados oficiais da PGFN</p>
+        <h1>Quanto devem ao governo federal?</h1>
+        <p class="hero-sub">A Dívida Ativa da União: impostos, contribuições ao INSS, FGTS e outras dívidas que empresas e pessoas não pagaram e que a Procuradoria-Geral da Fazenda Nacional cobra.</p>
+        <p class="destaque-rot" id="i-rot">Empresas e pessoas devem à União</p>
+        <div class="destaque-valor" id="i-total">—</div>
+        <p class="extenso" id="i-ext"></p>
+        <p class="destaque-nota" id="i-nota"></p>
+        <div class="contador-linha">
+          <div><span>empresas devem</span><b id="i-pj">—</b><small class="extenso" id="i-pj-ext"></small></div>
+          <div><span>pessoas físicas devem</span><b id="i-pf">—</b></div>
+          <div><span>em cobrança (sem acordo)</span><b id="i-cob">—</b></div>
+          <div><span>parcelada ou negociada</span><b id="i-neg">—</b></div>
+        </div>
+        <p class="imp-nota" id="i-imp-nota"></p>
+      </div>
+      <div class="kpis" id="i-kpis"></div>
+      <div class="grade">
+        <article class="visual span-7"><header><h2>Os 10 maiores devedores</h2><span class="dica">empresas, somando todas as filiais · clique para ver os detalhes</span></header>
+          <ol class="top-lista" id="i-top"></ol><button class="btn-sec mais" data-ir="empresas" type="button">Ver o ranking completo</button></article>
+        <article class="visual span-5"><header><h2>De onde vem a dívida</h2></header><div class="canvas-box"><canvas id="g-i-base"></canvas></div>
+          <h2 class="d-sec">Situação da cobrança</h2><div id="i-sit"></div></article>
+      </div>
+    </section>
+
+    <!-- EMPRESAS -->
+    <section class="pagina" data-pag="empresas">
+      <div class="aviso-bancos"><b>Leia antes:</b> estar na Dívida Ativa quer dizer que a dívida foi cobrada e não paga no prazo — mas muitas empresas estão <b>pagando parcelado</b>, deram <b>garantia</b> ou <b>discutem a cobrança na Justiça</b>. Por isso mostramos a situação de cada valor. Os dados são da PGFN e valem para o fim do trimestre informado. Mostramos só empresas: <b>pessoas físicas aparecem apenas nos totais</b>.</div>
+      <div class="kpis" id="e-kpis"></div>
+      <article class="visual"><header><h2>Ranking: as maiores empresas devedoras</h2>
+        <span class="filtros-tabela"><input id="e-q" class="mini-busca" type="search" placeholder="Nome da empresa ou CNPJ">
+        <select id="e-uf" class="mini"><option value="">Todos os estados</option></select>
+        <select id="e-sit" class="mini"><option value="">Todas as situações</option><option value="cobranca">Com dívida em cobrança</option><option value="negociada">Com dívida parcelada</option><option value="garantida">Com garantia</option><option value="suspensa">Suspensa na Justiça</option></select></span>
+        <span class="dica">clique no título da coluna para ordenar · no nome para ver os detalhes</span></header>
+        <div class="legenda-split" id="e-leg"></div>
+        <div class="tabela-rolagem"><table class="ranking" id="em-tab"></table></div>
+        <button class="btn-sec mais" id="e-mais" type="button" hidden>Mostrar mais</button>
+        <p class="dica" id="e-nota"></p></article>
+      <div class="grade">
+        <article class="visual span-6"><header><h2>Quantas empresas devem quanto</h2><span class="dica">nº de empresas por faixa de dívida</span></header><div class="canvas-box"><canvas id="g-e-faixas"></canvas></div></article>
+        <article class="visual span-6"><header><h2>E quanto cada faixa deve</h2><span class="dica">soma da dívida das empresas em cada faixa</span></header><div class="canvas-box"><canvas id="g-e-faixas-v"></canvas></div></article>
+      </div>
+    </section>
+
+    <!-- ESTADOS -->
+    <section class="pagina" data-pag="estados">
+      <div class="grade">
+        <article class="visual span-6"><header><h2>Dívida Ativa por estado</h2><span class="dica">toque no estado para ver as maiores empresas dele</span></header><div class="mapa-br" id="uf-mapa"></div></article>
+        <article class="visual span-6"><header><h2>Estados</h2><span class="dica">pelo endereço do devedor no cadastro</span></header><div class="tabela-rolagem"><table class="ranking" id="uf-tab"></table></div></article>
+      </div>
+      <article class="visual"><header><h2 id="uf-top-tit">Maiores empresas devedoras do estado</h2>
+        <span class="filtros-tabela"><select id="uf-sel" class="mini"></select></span>
+        <span class="dica">valor devido pela empresa com endereço neste estado</span></header>
+        <div class="tabela-rolagem"><table class="ranking" id="uf-top"></table></div>
+        <button class="btn-sec mais" id="uf-mais" type="button" hidden>Mostrar mais (até 60)</button></article>
+    </section>
+
+    <!-- TIPOS -->
+    <section class="pagina" data-pag="tipos">
+      <div class="kpis" id="t-kpis"></div>
+      <div class="grade">
+        <article class="visual span-12"><header><h2>Que dívidas são essas</h2><span class="dica">os tipos de cobrança que mais somam</span>
+          <span class="filtros-tabela"><select id="t-base" class="mini"></select></span></header>
+          <div class="canvas-box muito-alto"><canvas id="g-t-rec"></canvas></div></article>
+        <article class="visual span-12"><header><h2>Desde quando a dívida está inscrita</h2><span class="dica">valor de hoje, pelo ano em que a dívida entrou na Dívida Ativa</span></header>
+          <div class="canvas-box alto"><canvas id="g-t-ano"></canvas></div><p class="dica" id="t-ano-nota"></p></article>
+      </div>
+    </section>
+
+    <!-- SITUAÇÃO -->
+    <section class="pagina" data-pag="situacao">
+      <div class="kpis" id="s-kpis"></div>
+      <div class="grade">
+        <article class="visual span-6"><header><h2>Situação, por tipo de dívida</h2></header><div class="canvas-box alto"><canvas id="g-s-base"></canvas></div></article>
+        <article class="visual span-6 texto"><header><h2>O que quer dizer cada situação</h2></header>
+          <p><b>Em cobrança</b>: a dívida está sendo cobrada e não há acordo, garantia nem decisão da Justiça suspendendo. É o dinheiro que, em tese, ainda pode ser recuperado.</p>
+          <p><b>Parcelada ou negociada</b>: o devedor fez acordo (parcelamento, transação) e está pagando. Enquanto pagar em dia, não é cobrado.</p>
+          <p><b>Com garantia</b>: o devedor ofereceu um bem, seguro ou depósito para garantir o pagamento enquanto discute a dívida.</p>
+          <p><b>Suspensa por decisão judicial</b>: a Justiça mandou parar a cobrança enquanto julga o caso.</p>
+          <p><b>Ajuizada</b>: a PGFN já entrou com ação na Justiça (execução fiscal) para cobrar.</p></article>
+      </div>
+      <article class="visual"><header><h2>As situações como a PGFN publica</h2><span class="dica">nº de inscrições (dívidas) de devedor principal</span></header><div id="s-orig"></div></article>
+    </section>
+
+    <!-- O QUE DAVA PRA FAZER -->
+    <section class="pagina" data-pag="dava">
+      <div class="selos-legenda"><span class="selo-t t-es">Análise</span><small>Comparação ilustrativa: o valor da Dívida Ativa <b>em cobrança</b> (sem parcelamento, garantia ou suspensão), trocado por obras e serviços com custos de referência públicos. Grande parte dessa dívida é difícil de recuperar.</small></div>
+      <div class="dava-topo visual"><p class="sub" id="dv-sub"></p><div class="destaque-valor" id="dv-total">—</div><p class="extenso" id="dv-ext"></p><p class="sub" id="dv-regra"></p></div>
+      <div class="dava-cards" id="dv-cards"></div>
+      <article class="visual texto"><header><h2>Custos de referência e fontes</h2></header><div id="dv-fontes"></div></article>
+    </section>
+
+    <!-- MÉTODO -->
+    <section class="pagina texto" data-pag="metodo">
+      <article class="visual">
+        <h2>De onde vêm os dados</h2>
+        <p><b>Procuradoria-Geral da Fazenda Nacional (PGFN)</b>, dados abertos da Dívida Ativa da União (<a href="https://dadosabertos.pgfn.gov.br/" target="_blank" rel="noopener">dadosabertos.pgfn.gov.br</a>), publicados a cada trimestre em três arquivos: tributos e demais créditos (sistema SIDA), contribuições previdenciárias (INSS) e FGTS. O robô confere toda semana se saiu um trimestre novo.</p>
+        <h2>Como somamos</h2>
+        <ul>
+          <li><b>Só o devedor principal.</b> Cada dívida (inscrição) aparece uma vez para o devedor principal e de novo, com o mesmo valor, para cada sócio ou empresa corresponsável. Somar tudo contaria a mesma dívida várias vezes.</li>
+          <li><b>Empresas pela raiz do CNPJ</b> (os 8 primeiros números): matriz e filiais somam juntas. O nome mostrado é o da matriz.</li>
+          <li><b>Valor consolidado</b>: o valor da dívida na data da publicação, com juros, multa e encargos, como informado pela PGFN.</li>
+          <li><b>Estado</b>: o do endereço do devedor no cadastro da PGFN. Os arquivos não trazem a cidade, por isso não há ranking por município.</li>
+        </ul>
+        <h2>Privacidade</h2>
+        <p>A lei permite divulgar quem está inscrito na Dívida Ativa (Código Tributário Nacional, art. 198, § 3º, II), e a própria PGFN publica a lista. Mesmo assim, o Quanto Custa <b>não mostra nomes de pessoas físicas</b>: elas aparecem só nos totais. O CPF já vem mascarado pela PGFN. Nomes de empresas individuais que contenham CPF também são mascarados.</p>
+        <h2>Limitações</h2>
+        <ul>
+          <li>Os valores valem para o fim do trimestre informado. Quem pagou depois pode continuar aparecendo até a próxima publicação.</li>
+          <li>Estar inscrito não quer dizer que a empresa não está pagando: veja a situação de cada valor (parcelada, com garantia, suspensa).</li>
+          <li>O número de pessoas físicas é aproximado: o CPF vem mascarado, então contamos combinações de CPF parcial, início do nome e estado.</li>
+          <li>Para consultar um devedor específico, use a <a href="https://www.listadevedores.pgfn.gov.br/" target="_blank" rel="noopener">Lista de Devedores da PGFN</a>.</li>
+        </ul>
+        <p class="sub" id="m-info"></p>
+      </article>
+    </section>
+  </main>
+  <p class="rodape">Quanto Custa · projeto independente, sem vínculo com a PGFN · dados públicos · <a href="https://quantocustaum.com/sobre/">Sobre</a> · <a href="#" data-boas-vindas>Boas-vindas</a> · <a href="https://quantocustaum.com/privacidade/">Privacidade</a> · <a href="https://github.com/projetoquantocusta1-alt/projetoquantocusta1-alt.github.io/issues">Pedir correção</a> · <a href="https://github.com/projetoquantocusta1-alt/quanto-custa-devedores">Código aberto</a></p>
+</div>
+
+<div class="veu-ficha" id="ficha" hidden role="dialog" aria-modal="true">
+  <div class="ficha-caixa"><button class="fechar" id="ficha-fechar" type="button" aria-label="Fechar">×</button><div id="ficha-corpo"></div></div>
+</div>
+
+<script src="vendor/chart.umd.js"></script>
+<script src="vendor/mapa-brasil.js"></script>
+<script src="referencias.js?v=1"></script>
+<script src="boasvindas.js?v=1" data-site="v"></script>
+<script src="app.js?v=1"></script>
+<script data-goatcounter="https://quantocustaum.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<script>/* número de visitas: selo no topo; some se o GoatCounter não responder */
+(function () {
+  fetch("https://quantocustaum.goatcounter.com/counter/TOTAL.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    var n = d && parseInt(String(d.count || "").replace(/\D/g, ""), 10);
+    if (!n) return;
+    var fmt = function (x) { return x.toLocaleString("pt-BR"); };
+    var alvo = document.querySelector("[data-visitas]");
+    if (!alvo) return;
+    var b = alvo.querySelector("b"); alvo.hidden = false;
+    alvo.querySelector(".visitas").lastChild.textContent = n === 1 ? " visita ao Quanto Custa" : " visitas ao Quanto Custa";
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { b.textContent = fmt(n); return; }
+    var t0 = null, dur = 1200;
+    (function passo(t) { if (!t0) t0 = t; var k = Math.min(1, (t - t0) / dur); b.textContent = fmt(Math.round(n * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(passo); })(performance.now());
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>
