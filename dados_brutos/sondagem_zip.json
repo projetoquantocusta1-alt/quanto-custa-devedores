@@ -1,0 +1,66 @@
+{
+ "url": "https://portaldatransparencia.gov.br/download-de-dados/emendas-parlamentares/UNICO",
+ "zip_mb": 47.2,
+ "membros": [
+  {
+   "nome": "EmendasParlamentares.csv",
+   "mb": 49.0,
+   "amostra": [
+    "\"Código da Emenda\";\"Ano da Emenda\";\"Tipo de Emenda\";\"Código do Autor da Emenda\";\"Nome do Autor da Emenda\";\"Número da emenda\";\"Possui Apoiador/Solicitante? \";\"Localidade de aplicação do recurso\";\"Código Município IBGE\";\"Município\";\"Código UF IBGE\";\"UF\";\"Região\";\"Código Função\";\"Nome Função\";\"Código Subfunção\";\"Nome Subfunção\";\"Código Programa\";\"Nome Programa\";\"Código Ação\";\"Nome Ação\";\"Código Plano Orçamentário\";\"Nome Plano Orçamentário\";\"Valor Empenhado\";\"Valor Liquidado\";\"Valor Pago\";\"Valor Restos A Pagar Inscritos\";\"Valor Restos A Pagar Cancelados\";\"Valor Restos A Pagar Pagos\"",
+    "\"Sem informação\";\"2014\";\"Emenda Individual - Transferências com Finalidade Definida\";\"S/I\";\"Sem informação\";\"S/I\";\"Não se aplica\";\"LONTRAS - SC\";\"4209904\";\"LONTRAS\";\"4200000\";\"SANTA CATARINA\";\"Sul\";\"12\";\"Educação\";\"847\";\"Transferências para a educação básica\";\"2030\";\"EDUCACAO BASICA\";\"0E53\";\"APOIO A AQUISICAO DE VEICULOS PARA O TRANSPORTE ESCOLAR DA EDUCACAO BASICA - CAMINHO DA ESCOLA\";\"0000\";\"APOIO AO TRANSPORTE ESCOLAR PARA A EDUCACAO BASICA - CAMINHO DA ESCOLA - DESPESAS DIVERSAS\";\"148900,00\";\"0,00\";\"0,00\";\"0,00\";\"0,00\";\"148900,00\"",
+    "\"Sem informação\";\"2014\";\"Emenda Individual - Transferências com Finalidade Definida\";\"S/I\";\"Sem informação\";\"S/I\";\"Não se aplica\";\"PEDRA GRANDE - RN\";\"2409506\";\"PEDRA GRANDE\";\"2400000\";\"RIO GRANDE DO NORTE\";\"Nordeste\";\"15\";\"Urbanismo\";\"451\";\"infra-estrutura urbana\";\"2054\";\"PLANEJAMENTO URBANO\";\"1D73\";\"APOIO A POLITICA NACIONAL DE DESENVOLVIMENTO URBANO VOLTADO A IMPLANTACAO E QUALIFICACAO VIARIA\";\"0000\";\"APOIO A POLITICA NACIONAL DE DESENVOLVIMENTO URBANO - DESPESAS DIVERSAS\";\"689500,00\";\"0,00\";\"0,00\";\"0,00\";\"689500,00\";\"0,00\"",
+    "\"Sem informação\";\"2014\";\"Emenda Individual - Transferências com Finalidade Definida\";\"S/I\";\"Sem informação\";\"S/I\";\"Não se aplica\";\"CHOPINZINHO - PR\";\"4105409\";\"CHOPINZINHO\";\"4100000\";\"PARANÁ\";\"Sul\";\"20\";\"Agricultura\";\"608\";\"Promoção da produção agropecuária\";\"2014\";\"AGROPECUARIA SUSTENTAVEL, ABASTECIMENTO E COMERCIALIZACAO\";\"20ZV\";\"FOMENTO AO SETOR AGROPECUARIO\";\"0000\";\"FOMENTO AO SETOR AGROPECUARIO - DESPESAS DIVERSAS\";\"146250,00\";\"0,00\";\"0,00\";\"0,00\";\"0,00\";\"146250,00\""
+   ]
+  },
+  {
+   "nome": "EmendasParlamentares_Convenios.csv",
+   "mb": 26.2,
+   "amostra": [
+    "\"Código da Emenda\";\"Código Função\";\"Nome Função\";\"Código Subfunção\";\"Nome Subfunção\";\"Localidade do gasto\";\"Tipo de Emenda\";\"Data Publicação Convênio\";\"Convenente\";\"Objeto Convênio\";\"Número Convênio\";\"Valor Convênio\"",
+    "\"201510480009\";\"10\";\"Saúde\";\"302\";\"Assistência hospitalar e ambulatorial\";\"SÃO PAULO (UF)\";\"Emenda Individual - Transferências com Finalidade Definida\";\"06/01/2016\";\"FUNDACAO OSWALDO RAMOS\";\"AQUISICAO DE EQUIPAMENTO E MATERIAL PERMANENTE PARA UNIDADE DE ATENCAO ESPECIALIZADA EM SAUDE\";\"825378\";\"1450000,00\"",
+    "\"201510480010\";\"10\";\"Saúde\";\"302\";\"Assistência hospitalar e ambulatorial\";\"SÃO PAULO (UF)\";\"Emenda Individual - Transferências com Finalidade Definida\";\"16/12/2015\";\"CASA DE SAUDE SANTA MARCELINA\";\"AQUISICAO DE EQUIPAMENTO E MATERIAL PERMANENTE PARA UNIDADE DE ATENCAO ESPECIALIZADA EM SAUDE\";\"821060\";\"1000000,00\"",
+    "\"201510480013\";\"10\";\"Saúde\";\"302\";\"Assistência hospitalar e ambulatorial\";\"SÃO PAULO (UF)\";\"Emenda Individual - Transferências com Finalidade Definida\";\"08/01/2016\";\"IRMANDADE DA SANTA CASA DE MISERICORDIA DE SAO PAULO\";\"AQUISICAO DE EQUIPAMENTO E MATERIAL PERMANENTE PARA UNIDADE DE ATENCAO ESPECIALIZADA EM SAUDE\";\"823893\";\"919200,00\""
+   ]
+  },
+  {
+   "nome": "EmendasParlamentares_Parcerias.csv",
+   "mb": 25.6,
+   "amostra": [
+    "\"Emenda Parlamentar\";\"Autor da Emenda\";\"Código da Parceria\";\"Situação da Parceria\";\"Ente Repassador\";\"CNPJ Ente Repassador\";\"Beneficiário (Ente Recebedor)\";\"CNPJ Beneficiário (Ente Recebedor)\";\"UF\";\"Município\";\"Objeto\";\"Início Período Execução\";\"Fim Período Execução\";\"Valor (R$)\"",
+    "\"202512460001\";\"JULIO CESAR\";\"202500011249\";\"Aprovada\";\"Ministério da Saúde\";\"00394544012787\";\"FUNDO MUNICIPAL DE SAUDE\";\"19374673000130\";\"PI\";\"PARNAÍBA\";\"INCREMENTO DA MÉDIA E ALTA COMPLEXIDADE (MAC)\";\"23/07/2025\";\"23/07/2026\";\"3000000,00\"",
+    "\"202512460003\";\"JULIO CESAR\";\"202500002691\";\"Aprovada\";\"Ministério da Saúde\";\"00394544012787\";\"FUNDO MUNICIPAL DE SAUDE DE AGUA BRANCA\";\"11788216000180\";\"PI\";\"ÁGUA BRANCA\";\"INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"22/07/2025\";\"22/07/2026\";\"300000,00\"",
+    "\"202512460003\";\"JULIO CESAR\";\"202500002700\";\"Aprovada\";\"Ministério da Saúde\";\"00394544012787\";\"FUNDO MUNICIPAL DE SAUDE\";\"13845347000187\";\"PI\";\"ANTÔNIO ALMEIDA\";\"INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"22/07/2025\";\"22/07/2026\";\"350000,00\""
+   ]
+  },
+  {
+   "nome": "EmendasParlamentares_PlanodeTrabalhoParcerias.csv",
+   "mb": 149.2,
+   "amostra": [
+    "\"Código da Parceria\";\"Situação da Parceria\";\"Ente Repassador\";\"CNPJ Ente Repassador\";\"Beneficiário (Ente Recebedor)\";\"CNPJ Beneficiário (Ente Recebedor)\";\"UF\";\"Município\";\"Objeto\";\"Meta\";\"Etapa\";\"Item\";\"Início Período Execução da Etapa\";\"Fim Período Execução da Etapa\";\"Valor do Item (R$)\"",
+    "\"202500000530\";\"Aprovada\";\"Ministério da Saúde\";\"00394544012787\";\"FUNDO MUNICIPAL DE SAUDE\";\"09622055000108\";\"AC\";\"BRASILEIA\";\"INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"01 INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"01.01 INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"ATENÇÃO INTEGRAL À SAÚDE DA MULHER - Aquisição de Insumos para o Atendimento Clí\";\"22/07/2025\";\"22/07/2026\";\"350000,00\"",
+    "\"202500000530\";\"Aprovada\";\"Ministério da Saúde\";\"00394544012787\";\"FUNDO MUNICIPAL DE SAUDE\";\"09622055000108\";\"AC\";\"BRASILEIA\";\"INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"01 INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"01.01 INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"ESTRATÉGIA DE RASTREAMENTO E CONTROLE DE CONDINÇÕES CRÔNICAS - Atividades para F\";\"22/07/2025\";\"22/07/2026\";\"350000,00\"",
+    "\"202500000533\";\"Aprovada\";\"Ministério da Saúde\";\"00394544012787\";\"FUNDO MUNICIPAL DE SAUDE DE ITATIBA DO SUL\";\"12043944000125\";\"RS\";\"ITATIBA DO SUL\";\"INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"01 INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"01.01 INCREMENTO AO PISO DA ATENÇÃO PRIMÁRIA\";\"ESTRATÉGIA DE RASTREAMENTO E CONTROLE DE CONDINÇÕES CRÔNICAS - Atividades para F\";\"22/07/2025\";\"22/07/2026\";\"200000,00\""
+   ]
+  },
+  {
+   "nome": "EmendasParlamentares_PlanodeTrabalhoTransferenciasEspeciais.csv",
+   "mb": 26.7,
+   "amostra": [
+    "\"Emenda Parlamentar\";\"Autor da Emenda\";\"Programa do Plano de Trabalho\";\"Situação do Plano de Trabalho\";\"CNPJ do Beneficiário\";\"Beneficiário\";\"UF do Beneficiário\";\"Plano de Ação\";\"Situação do Plano de Ação\";\"Detalhamento do Objeto\";\"Valor\"",
+    "\"202012700004\";\"JOAO CARLOS BACELAR\";\"0903\";\"Legado ADPF 854 STF / NT - TCU\";\"14195358000121\";\"MUNICIPIO DE GANDU\";\"BA\";\"0903-003307/2020\";\"CIENTE\";\"PAVIMENTAÇÃO DE VIAS NA SEDE DO MUNICÍPIO DE GANDU E LIMPEZA URBANA NA SEDE DO MUNICÍPIO\";\"420227,00\"",
+    "\"202012700004\";\"JOAO CARLOS BACELAR\";\"0903\";\"Legado ADPF 854 STF / NT - TCU\";\"13784384000122\";\"MUNICIPIO DE MARAGOGIPE\";\"BA\";\"0903-003751/2020\";\"CIENTE\";\"Contratação de serviço e fornecimento de materiais para gestão municipal.\";\"550000,00\"",
+    "\"202012700004\";\"JOAO CARLOS BACELAR\";\"0903\";\"Legado ADPF 854 STF / NT - TCU\";\"13698774000180\";\"MUNICIPIO DE EUCLIDES DA CUNHA\";\"BA\";\"0903-004295/2020\";\"CIENTE\";\"Execução da emenda especial com indicação do Dep. Federal João Carlos Bacelar.\";\"7000000,00\""
+   ]
+  },
+  {
+   "nome": "EmendasParlamentares_PorFavorecido.csv",
+   "mb": 184.6,
+   "amostra": [
+    "\"Código da Emenda\";\"Código do Autor da Emenda\";\"Nome do Autor da Emenda\";\"Número da emenda\";\"Tipo de Emenda\";\"Ano/Mês\";\"Código do Favorecido\";\"Favorecido\";\"Natureza Jurídica\";\"Tipo Favorecido\";\"UF Favorecido\";\"Município Favorecido\";\"Valor Recebido\"",
+    "\"202640890005\";\"4089\";\"ORIOVISTO GUIMARAES\";\"0005\";\"Emenda Individual - Transferências com Finalidade Definida\";\"202611\";\"11854334000149\";\"11.854.334 DEILSON NEVES PAIXAO\";\"Empresário (Individual)\";\"Pessoa Jurídica\";\"RJ\";\"BELFORD ROXO\";\"204,00\"",
+    "\"202638050004\";\"3805\";\"WELLINGTON FAGUNDES\";\"0004\";\"Emenda Individual - Transferências com Finalidade Definida\";\"202611\";\"17513984000107\";\"17.513.984 RENATO RIZZARO\";\"Empresário (Individual)\";\"Pessoa Jurídica\";\"BA\";\"ILHÉUS\";\"22200,00\"",
+    "\"202644050007\";\"4405\";\"KIKO CELEGUIM\";\"0007\";\"Emenda Individual - Transferências com Finalidade Definida\";\"202611\";\"21096895000180\";\"21.096.895 FAGNER MARQUES DE ARAUJO\";\"Empresário (Individual)\";\"Pessoa Jurídica\";\"RJ\";\"DUQUE DE CAXIAS\";\"3460,00\""
+   ]
+  }
+ ]
+}
