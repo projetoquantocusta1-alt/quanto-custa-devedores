@@ -3,7 +3,7 @@
 "use strict";
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-const E = { r: null, emp: null, est: null, meta: null, pag: "inicio", graf: {}, ord: ["total", -1], lim: 50, uf: "", limU: 15 };
+const E = { r: null, emp: null, est: null, meta: null, pag: "inicio", graf: {}, ord: ["total", -1], lim: 50, uf: "", limU: 15, ordC: ["total", -1], limC: 50 };
 const brl = (v, d = 0) => (v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: d, maximumFractionDigits: d });
 const curto = (v) => { const a = Math.abs(v || 0), f = (x, n = 2) => x.toLocaleString("pt-BR", { maximumFractionDigits: n });
   if (a >= 1e12) return "R$ " + f(v / 1e12) + " tri";
@@ -105,17 +105,70 @@ async function ficha(raiz) {
   await carregarEmp();
   let e = linhas(E.emp).find((x) => x.raiz === raiz);
   if (!e && E.est) for (const l of Object.values(E.est.ufs)) { const x = l.find((y) => y[0] === raiz); if (x) { e = Object.fromEntries(E.est.campos.map((c, i) => [c, x[i]])); break; } }
+  if (!e) { await carregarCruz(); if (E.cruz) e = linhas(E.cruz).find((x) => x.raiz === raiz); }
   if (!e) return;
   const pos = linhas(E.emp).findIndex((x) => x.raiz === raiz);
   const bs = Object.keys(BASE_ROT).filter((b) => e[b] > 0), sits = SIT.filter((s) => e[s] > 0);
   $("#ficha-corpo").innerHTML = `<div class="ficha-cab"><div><p class="selo">${pos >= 0 ? `${pos + 1}º maior devedor entre as empresas` : "Empresa devedora"} · ${esc(UF_NOME[e.uf] || e.uf)}</p><h2>${esc(e.nome)}</h2><p class="sub">CNPJ ${esc(e.cnpj)} · raiz ${esc(e.raiz)} (matriz e filiais somadas)</p></div></div>
-    <div class="kpis"><div class="kpi kpi-alerta"><div class="rot">Dívida total com a União</div><div class="val num">${curto(e.total)}</div><div class="obs">${nf(e.inscricoes)} dívidas inscritas · ${fimTri(E.r.trimestre)}</div></div>
+    <div class="kpis"><div class="kpi kpi-alerta"><div class="rot">Dívida total com a União</div><div class="val num">${curto(e.total)}</div><div class="obs">${e.inscricoes ? nf(e.inscricoes) + " dívidas inscritas · " : ""}${fimTri(E.r.trimestre)}</div></div>
       <div class="kpi"><div class="rot">Em cobrança, sem acordo</div><div class="val num">${curto(e.cobranca)}</div><div class="obs">${pct((100 * e.cobranca) / e.total, 0)} da dívida</div></div>
       <div class="kpi"><div class="rot">Já cobrada na Justiça</div><div class="val num">${curto(e.ajuizado)}</div><div class="obs">execução fiscal</div></div></div>
-    <div class="grade"><div class="span-6"><h2 class="d-sec">Por situação</h2>${barrasHTML(sits.map((s) => ({ n: SIT_ROT[s], v: e[s], c: SIT_COR[s] })), e.total)}</div>
-      <div class="span-6"><h2 class="d-sec">Por tipo de dívida</h2>${barrasHTML(bs.map((b) => ({ n: BASE_ROT[b], v: e[b], c: BASE_COR[b] })), e.total)}</div></div>
+    <div class="grade"><div class="span-${bs.length ? 6 : 12}"><h2 class="d-sec">Por situação</h2>${barrasHTML(sits.map((s) => ({ n: SIT_ROT[s], v: e[s], c: SIT_COR[s] })), e.total)}</div>
+      ${bs.length ? `<div class="span-6"><h2 class="d-sec">Por tipo de dívida</h2>${barrasHTML(bs.map((b) => ({ n: BASE_ROT[b], v: e[b], c: BASE_COR[b] })), e.total)}</div>` : ""}</div>
+    <div id="ficha-rec"><h2 class="d-sec">Recebe dinheiro público?</h2><p class="dica">Procurando nas emendas parlamentares e nas notas dos sites do Quanto Custa…</p></div>
     <p class="aviso-bancos">Dados da PGFN para o fim do ${rotTri(E.r.trimestre)}. Valores parcelados, com garantia ou suspensos não estão "em atraso". Consulte a situação atual na <a href="https://www.listadevedores.pgfn.gov.br/" target="_blank" rel="noopener">Lista de Devedores da PGFN</a>.</p>`;
   $("#ficha").hidden = false;
+  history.replaceState(null, "", "#empresa-" + raiz);
+  $("#ficha-rec").innerHTML = await recebimentosHTML(raiz);
+}
+
+// ---------------------------------------------------------------- cruzamento: recebe dinheiro público
+const FONTES = { emendas: ["Emendas parlamentares", "#6b4fa0", "pagamentos recebidos de emendas (Portal da Transparência)", "parlamentares/autores"],
+  deputados: ["Cota dos deputados federais", "#2463A6", "notas da cota parlamentar", "deputados"],
+  senadores: ["Cota dos senadores", "#10243A", "notas da cota parlamentar (CEAPS)", "senadores"],
+  estaduais: ["Deputados estaduais (CE, BA, RN)", "#16865D", "notas da verba indenizatória", "Assembleias"],
+  municipios: ["Prefeituras do Ceará", "#D69A32", "empenhos (TCE-CE), líquidos de anulações", "prefeituras"] };
+const linkFonte = (f, cnpj, uf) => ({ emendas: `https://portaldatransparencia.gov.br/pessoa-juridica/${cnpj}`, senadores: `https://quantocustaum.com/quanto-custa-senadores/#forn-${cnpj}`,
+  deputados: "https://quantocustaum.com/quanto-custa-deputados/#fornecedores", estaduais: "https://quantocustaum.com/quanto-custa-deputados-estaduais/",
+  municipios: "https://quantocustaum.com/quanto-custa-municipios/" }[f]);
+async function carregarCruz() { if (E.cruz === undefined) E.cruz = await getJSON("dados/cruzamento.json").catch(() => null); return E.cruz; }
+async function recebimentosHTML(raiz) {
+  const d = await getJSON(`dados/cruz/${raiz.slice(0, 2)}.json`).catch(() => null);
+  const r = d && d[raiz];
+  if (!r) return `<h2 class="d-sec">Recebe dinheiro público?</h2><p class="dica">Não encontramos esta empresa entre quem recebeu emendas parlamentares nem entre os fornecedores de deputados, senadores, deputados estaduais (CE, BA, RN) e prefeituras do Ceará que o Quanto Custa acompanha.</p>`;
+  const fs = Object.keys(FONTES).filter((f) => r[f]), tot = soma(fs.map((f) => r[f].v));
+  return `<h2 class="d-sec">Recebe dinheiro público? Sim — ${curto(tot)} <span class="sub">(valores da época)</span></h2>
+    <div class="rec-lista">${fs.map((f) => { const x = r[f], [nome, cor, oque, quem] = FONTES[f];
+      return `<div class="rec" style="--c:${cor}"><div class="rec-cab"><b>${nome}</b><span class="num">${curto(x.v)}</span></div>
+        <p class="sub">${nf(x.n)} ${oque}${x.anos.length ? ` · ${x.anos[0] === x.anos[1] ? x.anos[0] : x.anos[0] + " a " + x.anos[1]}` : ""} · ${nf(x.nquem)} ${quem}</p>
+        <ul>${x.quem.map(([q, v]) => `<li><span>${esc(q)}</span><span class="num">${curto(v)}</span></li>`).join("")}${x.nquem > x.quem.length ? `<li class="sub">e mais ${nf(x.nquem - x.quem.length)}</li>` : ""}</ul>
+        <a href="${linkFonte(f, x.cnpj)}" target="_blank" rel="noopener">Ver na fonte →</a></div>`; }).join("")}</div>
+    <p class="dica">Receber dinheiro público e ter dívida com a União não é, por si só, irregular. Para contratar com o governo a empresa precisa de certidão de regularidade fiscal, que é dada também a quem está com a dívida parcelada, garantida ou suspensa na Justiça.</p>`;
+}
+const COLS_C = [["nome", "Empresa"], ["uf", "UF"], ["total", "Dívida com a União"], ["cobranca", "Em cobrança"], ["recebido", "Recebeu de dinheiro público"]];
+function rCruz() {
+  carregarCruz().then((C) => {
+    if (!C) { $("#c-kpis").innerHTML = `<p class="aviso">O cruzamento ainda está sendo feito pelo robô. Volte em alguns minutos.</p>`; return; }
+    const T = C.totais;
+    kpis("#c-kpis", [["Empresas devedoras que recebem dinheiro público", nf(T.empresas), `de ${nf(E.r.empresas_devedoras)} empresas na Dívida Ativa`],
+      ["Quanto elas devem à União", curto(T.divida), `${curto(T.cobranca)} em cobrança, sem acordo`, "kpi-alerta"],
+      ["Quanto receberam", curto(T.recebido), "emendas, cotas e prefeituras · valores da época"]]);
+    $("#c-fontes").innerHTML = barrasHTML(Object.keys(FONTES).filter((f) => T.por_fonte[f] && T.por_fonte[f][0] > 0).map((f) => ({ n: FONTES[f][0], s: `${nf(T.por_fonte[f][1])} empresas devedoras`, v: T.por_fonte[f][0], c: FONTES[f][1] })), T.recebido);
+    const sf = $("#c-fonte"); if (sf.options.length === 1) sf.innerHTML += Object.keys(FONTES).map((f) => `<option value="${f}">${FONTES[f][0]}</option>`).join("");
+    $("#c-nota").textContent = `Na tabela: as ${nf(C.linhas.length)} empresas com as maiores dívidas ou que mais receberam. A ficha de cada uma mostra quem pagou. Fontes no período de cada site; dívida da PGFN em ${fimTri(E.r.trimestre)}.`;
+    tabelaCruz();
+  });
+}
+function tabelaCruz() {
+  const L = linhas(E.cruz), q = semAcento($("#c-q").value.trim()), qd = q.replace(/\D/g, ""), f = $("#c-fonte").value, so = $("#c-cob").checked, [k, dir] = E.ordC;
+  const F = L.filter((e) => (!q || semAcento(e.nome).includes(q) || (qd.length >= 4 && e.cnpj.replace(/\D/g, "").includes(qd))) && (!f || e[f] > 0) && (!so || e.cobranca > 0));
+  const ord = [...F].sort((a, b) => (typeof a[k] === "string" ? a[k].localeCompare(b[k]) : (a[k] || 0) - (b[k] || 0)) * dir);
+  const chip = (e) => Object.keys(FONTES).filter((x) => e[x] > 0).map((x) => `<span class="chip" style="--c:${FONTES[x][1]}" title="${FONTES[x][0]}: ${curto(e[x])}">${FONTES[x][0].split(" ")[0] === "Cota" ? FONTES[x][0].replace("Cota dos ", "") : FONTES[x][0].split(" ")[0]}</span>`).join("");
+  $("#cz-tab").innerHTML = `<thead><tr><th class="num">#</th>${COLS_C.map(([c, n]) => `<th class="${["nome", "uf"].includes(c) ? "" : "num"} ordena${c === k ? " ativo" : ""}" data-ordc="${c}">${n}${c === k ? (dir < 0 ? " ▾" : " ▴") : ""}</th>`).join("")}<th>De onde</th></tr></thead>
+    <tbody>${ord.slice(0, E.limC).map((e, i) => `<tr><td class="num sub">${i + 1}º</td><td class="quebra"><button class="link-dep" data-emp="${esc(e.raiz)}">${esc(e.nome)}</button><span class="sub seg">${esc(e.cnpj)}</span>${split(e)}</td><td>${esc(e.uf)}</td>
+      <td class="num"><b>${curto(e.total)}</b></td><td class="num${e.cobranca ? " neg" : ""}">${e.cobranca ? curto(e.cobranca) : "—"}</td><td class="num prev">${curto(e.recebido)}</td><td class="chips">${chip(e)}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td></td><td>${nf(F.length)} empresas</td><td></td><td class="num">${curto(soma(F.map((e) => e.total)))}</td><td class="num">${curto(soma(F.map((e) => e.cobranca)))}</td><td class="num">${curto(soma(F.map((e) => e.recebido)))}</td><td></td></tr></tfoot>`;
+  $("#c-mais").hidden = F.length <= E.limC;
 }
 
 // ---------------------------------------------------------------- estados
@@ -197,7 +250,7 @@ function rDava() {
 function rMetodo() { $("#m-info").textContent = `Trimestre usado: ${rotTri(E.r.trimestre)} · ${nf(E.r.linhas_lidas)} linhas lidas nos arquivos da PGFN · atualizado em ${new Date(E.r.gerado_em).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}.`; }
 
 // ---------------------------------------------------------------- navegação
-const PAGS = { inicio: rInicio, empresas: rEmpresas, estados: rEstados, tipos: rTipos, situacao: rSituacao, dava: rDava, metodo: rMetodo };
+const PAGS = { inicio: rInicio, empresas: rEmpresas, cruz: rCruz, estados: rEstados, tipos: rTipos, situacao: rSituacao, dava: rDava, metodo: rMetodo };
 async function render() { try { await PAGS[E.pag](); } catch (e) { console.error(e); } }
 function irPara(p) {
   E.pag = p; $$(".pagina").forEach((s) => s.classList.toggle("ativa", s.dataset.pag === p));
@@ -218,18 +271,23 @@ document.addEventListener("click", (e) => {
   const em = e.target.closest("[data-emp]"); if (em) { ficha(em.dataset.emp); return; }
   const ir = e.target.closest("[data-ir]"); if (ir) { irPara(ir.dataset.ir); return; }
   const uf = e.target.closest("[data-ufsel], #uf-mapa [data-uf]"); if (uf) { E.uf = uf.dataset.ufsel || uf.dataset.uf; E.limU = 15; rEstados(); return; }
+  const oc = e.target.closest("#cz-tab th[data-ordc]"); if (oc) { const c = oc.dataset.ordc; E.ordC = [c, E.ordC[0] === c ? -E.ordC[1] : ["nome", "uf"].includes(c) ? 1 : -1]; tabelaCruz(); return; }
   const o = e.target.closest("#em-tab th[data-ord]"); if (o) { const c = o.dataset.ord; E.ord = [c, E.ord[0] === c ? -E.ord[1] : ["nome", "uf"].includes(c) ? 1 : -1]; tabela(linhas(E.emp)); return; }
   const b = e.target.closest(".menu nav button"); if (b) irPara(b.dataset.pag);
 });
 const refaz = () => { E.lim = 50; tabela(linhas(E.emp)); };
 $("#e-q").oninput = refaz; $("#e-uf").onchange = refaz; $("#e-sit").onchange = refaz;
+const refazC = () => { E.limC = 50; if (E.cruz) tabelaCruz(); };
+$("#c-q").oninput = refazC; $("#c-fonte").onchange = refazC; $("#c-cob").onchange = refazC;
+$("#c-mais").onclick = () => { E.limC += 100; tabelaCruz(); };
 $("#e-mais").onclick = () => { E.lim += 100; tabela(linhas(E.emp)); };
 $("#uf-sel").onchange = (e) => { E.uf = e.target.value; E.limU = 15; rEstados(); };
 $("#uf-mais").onclick = () => { E.limU = 60; rEstados(); };
 $("#t-base").onchange = () => rTipos();
-$("#ficha-fechar").onclick = () => ($("#ficha").hidden = true);
-$("#ficha").onclick = (e) => { if (e.target.id === "ficha") $("#ficha").hidden = true; };
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") $("#ficha").hidden = true; });
+const fechaFicha = () => { $("#ficha").hidden = true; if (location.hash.startsWith("#empresa-")) history.replaceState(null, "", "#" + E.pag); };
+$("#ficha-fechar").onclick = fechaFicha;
+$("#ficha").onclick = (e) => { if (e.target.id === "ficha") fechaFicha(); };
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#ficha").hidden) fechaFicha(); });
 $("#abrir-menu").onclick = () => { $("#menu").classList.add("aberto"); $("#veu").hidden = false; };
 $("#veu").onclick = () => { $("#menu").classList.remove("aberto"); $("#veu").hidden = true; };
 let rz, larg = innerWidth; addEventListener("resize", () => { if (innerWidth === larg) return; larg = innerWidth; clearTimeout(rz); rz = setTimeout(render, 250); });

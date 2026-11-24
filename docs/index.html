@@ -19,7 +19,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=1">
 <link rel="stylesheet" href="tema.css?v=1">
-<link rel="stylesheet" href="devedores.css?v=1">
+<link rel="stylesheet" href="devedores.css?v=2">
 <link rel="stylesheet" href="marca/tokens.css?v=1">
 <link rel="stylesheet" href="marca/marca.css?v=1">
 </head>
@@ -30,6 +30,7 @@
     <a class="hub-link" href="https://quantocustaum.com/" title="Voltar ao início do Quanto Custa">← Todas as esferas</a>
     <button data-pag="inicio">Início</button>
     <button data-pag="empresas">Empresas</button>
+    <button data-pag="cruz">Recebem dinheiro público</button>
     <button data-pag="estados">Estados</button>
     <div class="grupo"><span class="grupo-rot" tabindex="0">A dívida</span><div class="grupo-itens">
       <button data-pag="tipos">Tipos de dívida</button>
@@ -98,6 +99,21 @@
       </div>
     </section>
 
+    <!-- CRUZAMENTO -->
+    <section class="pagina" data-pag="cruz">
+      <div class="aviso-bancos"><b>Cruzamento de dados oficiais:</b> empresas que <b>devem à União</b> (PGFN) e que <b>recebem dinheiro público</b>: de emendas parlamentares (Portal da Transparência) ou como fornecedoras de deputados federais, senadores, deputados estaduais (CE, BA, RN) e prefeituras do Ceará. O cruzamento é pelo CNPJ (matriz e filiais). <b>Não indica irregularidade</b>: quem está com a dívida parcelada, garantida ou suspensa pode tirar certidão e receber normalmente.</div>
+      <div class="kpis" id="c-kpis"></div>
+      <article class="visual"><header><h2>De onde vem o dinheiro que essas empresas recebem</h2><span class="dica">valores da época · soma de todos os anos disponíveis em cada fonte</span></header><div id="c-fontes"></div></article>
+      <article class="visual"><header><h2>Devedores da União que recebem dinheiro público</h2>
+        <span class="filtros-tabela"><input id="c-q" class="mini-busca" type="search" placeholder="Nome da empresa ou CNPJ">
+        <select id="c-fonte" class="mini"><option value="">Todas as fontes</option></select>
+        <label class="chave mini-chave"><input id="c-cob" type="checkbox"><span>Só com dívida em cobrança</span></label></span>
+        <span class="dica">clique no nome para ver quem pagou · no título da coluna para ordenar</span></header>
+                <div class="tabela-rolagem"><table class="ranking" id="cz-tab"></table></div>
+        <button class="btn-sec mais" id="c-mais" type="button" hidden>Mostrar mais</button>
+        <p class="dica" id="c-nota"></p></article>
+    </section>
+
     <!-- ESTADOS -->
     <section class="pagina" data-pag="estados">
       <div class="grade">
@@ -158,6 +174,15 @@
           <li><b>Valor consolidado</b>: o valor da dívida na data da publicação, com juros, multa e encargos, como informado pela PGFN.</li>
           <li><b>Estado</b>: o do endereço do devedor no cadastro da PGFN. Os arquivos não trazem a cidade, por isso não há ranking por município.</li>
         </ul>
+        <h2>Cruzamento: devedores que recebem dinheiro público</h2>
+        <p>Toda semana o robô junta, pelo CNPJ (raiz: matriz e filiais), as empresas da Dívida Ativa com quem recebeu dinheiro público nestas fontes:</p>
+        <ul>
+          <li><b>Emendas parlamentares</b>: arquivo "emendas por favorecido" do Portal da Transparência (CGU) — quem recebeu o pagamento, de qual emenda e autor. Só pessoas jurídicas.</li>
+          <li><b>Cota dos deputados federais</b> e <b>dos senadores</b>: notas fiscais das cotas, como nos sites dos deputados e dos senadores do Quanto Custa.</li>
+          <li><b>Deputados estaduais</b> do Ceará, Bahia e Rio Grande do Norte: notas da verba indenizatória.</li>
+          <li><b>Prefeituras do Ceará</b>: empenhos nota a nota do TCE-CE (prefeitura e câmara), líquidos de anulações.</li>
+        </ul>
+        <p>Os valores recebidos são os da época (sem correção pela inflação) e somam todos os anos disponíveis em cada fonte. A dívida é a do trimestre da PGFN. Receber dinheiro público e ter dívida com a União não é, por si só, irregular: a lei exige certidão de regularidade fiscal para contratar com o governo, e ela também é dada a quem está com a dívida parcelada, garantida ou suspensa. Contratos e pagamentos diretos do governo federal ainda não entram (próximo passo).</p>
         <h2>Privacidade</h2>
         <p>A lei permite divulgar quem está inscrito na Dívida Ativa (Código Tributário Nacional, art. 198, § 3º, II), e a própria PGFN publica a lista. Mesmo assim, o Quanto Custa <b>não mostra nomes de pessoas físicas</b>: elas aparecem só nos totais. O CPF já vem mascarado pela PGFN. Nomes de empresas individuais que contenham CPF também são mascarados.</p>
         <h2>Limitações</h2>
@@ -182,7 +207,7 @@
 <script src="vendor/mapa-brasil.js"></script>
 <script src="referencias.js?v=1"></script>
 <script src="boasvindas.js?v=1" data-site="v"></script>
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 <script data-goatcounter="https://quantocustaum.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <script>/* número de visitas: selo no topo; some se o GoatCounter não responder */
 (function () {
