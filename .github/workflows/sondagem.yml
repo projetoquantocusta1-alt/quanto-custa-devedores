@@ -1,6 +1,11 @@
 name: Sondagem (PGFN)
 on:
   workflow_dispatch:
+    inputs:
+      url:
+        description: "Endereço de um .zip para listar (opcional)"
+        required: false
+        default: ""
 permissions:
   contents: write
 jobs:
@@ -13,7 +18,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install requests
-      - run: python sondar.py
+      - run: if [ -n "${{ github.event.inputs.url }}" ]; then python sondar_zip.py "${{ github.event.inputs.url }}"; else python sondar.py; fi
       - name: Publicar
         if: always()
         run: |
