@@ -95,9 +95,9 @@ def linha_emp(ag, rz, valor_uf=None):
     uf = max(ufs, key=ufs.get) if ufs else ""
     nome = mascarar_cpf_no_texto(ag.nome.get(rz, ""))   # MEI pode ter CPF no nome
     cnpj = ag.cnpj.get(rz, "")
-    out = [rz, cnpj, nome, uf] + [r2(x) for x in e[:10]] + [e[10]]
+    out = [rz, cnpj, nome, uf] + [round(x) for x in e[:10]] + [e[10]]   # em reais inteiros (arquivo menor)
     if valor_uf is not None:
-        out.append(r2(valor_uf))
+        out.append(round(valor_uf))
     return out
 
 
@@ -135,6 +135,7 @@ def main():
             por_uf.setdefault(uf, []).append((v, rz))
     estados = {"trimestre": tri, "campos": CAMPOS + ["valor_uf"],
                "ufs": {uf: [linha_emp(ag, rz, v) for v, rz in sorted(l, reverse=True)[:TOP_UF]] for uf, l in por_uf.items()}}
+    resumo["top10"] = {"campos": CAMPOS, "linhas": empresas["linhas"][:10]}   # o início abre sem baixar o ranking inteiro
     gravar("resumo.json", resumo)
     gravar("empresas.json", empresas)
     gravar("estados.json", estados)

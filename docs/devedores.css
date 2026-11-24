@@ -66,3 +66,4 @@ th.ordena.ativo { color: var(--accent); }
 .top-lista .v { font: 700 14px var(--mono, "IBM Plex Mono", monospace); white-space: nowrap; }
 #uf-tab tr.sel td { background: #E6F0F9; }
 .grade > div[class^="span-"] { min-width: 0; }
+#em-tab td.quebra { min-width: 200px; } #em-tab td, #em-tab th { padding-left: 7px; padding-right: 7px; }

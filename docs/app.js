@@ -61,7 +61,7 @@ async function rInicio() {
     ["Pessoas físicas devedoras", "≈ " + nf(R.pessoas_devedoras_aprox), "aproximado · nomes não são mostrados"],
     ["As 100 maiores empresas", pct(c["100"], 1), "do que todas as empresas devem", "kpi-alerta"],
     ["Já cobrada na Justiça", pct((100 * V(R.ajuizado, "sim")) / tot, 1), `${curto(V(R.ajuizado, "sim"))} em execução fiscal`]]);
-  const top = linhas(E.emp).slice(0, 10);
+  const top = linhas(E.r.top10 || E.emp);
   $("#i-top").innerHTML = top.map((e) => `<li><span><button class="link-dep" data-emp="${esc(e.raiz)}">${esc(e.nome)}</button><span class="s">${esc(e.uf)} · ${esc(e.cnpj)}</span>${split(e)}</span><span class="v">${curto(e.total)}</span></li>`).join("");
   const bs = Object.keys(BASE_ROT);
   grafico("g-i-base", { type: "doughnut", data: { labels: bs.map((b) => BASE_ROT[b]), datasets: [{ data: bs.map((b) => V(R.base, b)), backgroundColor: bs.map((b) => BASE_COR[b]) }] },
@@ -70,8 +70,10 @@ async function rInicio() {
 }
 
 // ---------------------------------------------------------------- empresas
-const COLS = [["nome", "Empresa"], ["uf", "UF"], ["total", "Dívida total"], ["cobranca", "Em cobrança"], ["negociada", "Parcelada"], ["garantida", "Garantia"], ["suspensa", "Suspensa"], ["ajuizado", "Na Justiça"], ["inscricoes", "Dívidas"]];
-function rEmpresas() {
+const COLS = [["nome", "Empresa"], ["uf", "UF"], ["total", "Dívida total"], ["cobranca", "Em cobrança"], ["negociada", "Parcelada"], ["garantida", "Garantia"], ["suspensa", "Suspensa"], ["ajuizado", "Na Justiça"]];
+async function carregarEmp() { if (!E.emp) E.emp = await getJSON("dados/empresas.json"); return E.emp; }
+async function rEmpresas() {
+  await carregarEmp();
   const R = E.r, L = linhas(E.emp), c = R.concentracao || {}, totPJ = V(R.pessoa, "pj");
   kpis("#e-kpis", [
     ["As 10 maiores", pct(c["10"], 1), "do que todas as empresas devem"], ["As 100 maiores", pct(c["100"], 1), "do total das empresas", "kpi-alerta"],
@@ -95,11 +97,12 @@ function tabela(L) {
   const vis = ord.slice(0, E.lim);
   $("#em-tab").innerHTML = `<thead><tr><th class="num">#</th>${COLS.map(([c, n]) => `<th class="${["nome", "uf"].includes(c) ? "" : "num"} ordena${c === k ? " ativo" : ""}" data-ord="${c}">${n}${c === k ? (dir < 0 ? " ▾" : " ▴") : ""}</th>`).join("")}</tr></thead>
     <tbody>${vis.map((e) => `<tr><td class="num sub">${pos.get(e.raiz)}º</td><td class="quebra"><button class="link-dep" data-emp="${esc(e.raiz)}">${esc(e.nome)}</button><span class="sub seg">${esc(e.cnpj)}</span>${split(e)}</td><td>${esc(e.uf)}</td>
-      <td class="num"><b>${curto(e.total)}</b></td>${["cobranca", "negociada", "garantida", "suspensa", "ajuizado"].map((s) => `<td class="num${s === "cobranca" && e[s] ? " neg" : ""}">${e[s] ? curto(e[s]) : "—"}</td>`).join("")}<td class="num">${nf(e.inscricoes)}</td></tr>`).join("")}</tbody>
-    <tfoot><tr><td></td><td>${nf(F.length)} empresas</td><td></td><td class="num">${curto(soma(F.map((e) => e.total)))}</td>${["cobranca", "negociada", "garantida", "suspensa", "ajuizado"].map((s) => `<td class="num">${curto(soma(F.map((e) => e[s])))}</td>`).join("")}<td class="num">${nf(soma(F.map((e) => e.inscricoes)))}</td></tr></tfoot>`;
+      <td class="num"><b>${curto(e.total)}</b></td>${["cobranca", "negociada", "garantida", "suspensa", "ajuizado"].map((s) => `<td class="num${s === "cobranca" && e[s] ? " neg" : ""}">${e[s] ? curto(e[s]) : "—"}</td>`).join("")}</tr>`).join("")}</tbody>
+    <tfoot><tr><td></td><td>${nf(F.length)} empresas</td><td></td><td class="num">${curto(soma(F.map((e) => e.total)))}</td>${["cobranca", "negociada", "garantida", "suspensa", "ajuizado"].map((s) => `<td class="num">${curto(soma(F.map((e) => e[s])))}</td>`).join("")}</tr></tfoot>`;
   $("#e-mais").hidden = F.length <= E.lim;
 }
-function ficha(raiz) {
+async function ficha(raiz) {
+  await carregarEmp();
   let e = linhas(E.emp).find((x) => x.raiz === raiz);
   if (!e && E.est) for (const l of Object.values(E.est.ufs)) { const x = l.find((y) => y[0] === raiz); if (x) { e = Object.fromEntries(E.est.campos.map((c, i) => [c, x[i]])); break; } }
   if (!e) return;
@@ -153,7 +156,7 @@ function rTipos() {
   const s = $("#t-base");
   if (!s.options.length) s.innerHTML = Object.keys(BASE_ROT).map((b) => `<option value="${b}">${BASE_ROT[b]}</option>`).join("");
   const rec = (R.receitas[s.value] || []).slice(0, 15), lim = celular() ? 18 : 48;
-  const limpa = (n) => n.replace(/^Receita da dívida ativa - /i, "").replace(/^DIV\.ATIVA-/i, "");
+  const limpa = (n) => n.replace(/^Receita da dívida ativa - /i, "").replace(/^R ?D ?Ativa ?- ?/i, "").replace(/^DIV\.ATIVA-/i, "").replace(/ - Receita da dívida ativa$/i, "");
   grafico("g-t-rec", { type: "bar", data: { labels: rec.map((r) => nomeCurto(limpa(r[0]), lim)), datasets: [{ label: "Dívida", data: rec.map((r) => r[1]), backgroundColor: BASE_COR[s.value] }] },
     options: { indexAxis: "y", maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: (c) => limpa(rec[c[0].dataIndex][0]), label: (c) => `${curto(c.parsed.x)} · ${nf(rec[c.dataIndex][2])} dívidas` } } }, scales: { x: eixoR() } } });
   const anos = Object.keys(R.ano).filter((a) => /^\d{4}$/.test(a)).sort(), sem = V(R.ano, "sem data");
@@ -204,7 +207,7 @@ function irPara(p) {
   render(); window.scrollTo(0, 0);
 }
 async function iniciar() {
-  try { [E.r, E.emp] = await Promise.all([getJSON("dados/resumo.json"), getJSON("dados/empresas.json")]); }
+  try { E.r = await getJSON("dados/resumo.json"); }
   catch { $("#aviso").hidden = false; $("#aviso").textContent = "Os dados ainda estão sendo coletados pelo robô. Volte em alguns minutos."; irPara("metodo"); return; }
   $("#atualizado").textContent = `Dados da PGFN: ${rotTri(E.r.trimestre)}`;
   const h = location.hash.slice(1), me = h.match(/^empresa-(\d{8})$/);
