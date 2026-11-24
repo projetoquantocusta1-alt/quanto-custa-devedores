@@ -37,3 +37,10 @@ def test_municipios_usa_a_prefeitura_que_pagou(tmp_path):
     r = Recebimentos()
     r.ler_municipios(tmp_path)
     assert r.resumo_de("33000167")["municipios"]["quem"] == [["Prefeitura de Abaiara (CE)", 100.0]]
+
+
+def test_publico_fica_fora():
+    from coletor.cruzamento import publico
+    assert publico("MUNICIPIO DE MARACANAU") and publico("ESTADO DA BAHIA") and publico("INSTITUTO NACIONAL DO SEGURO SOCIAL")
+    assert publico("FUNDO ESTADUAL DE SAUDE")
+    assert not publico("FORTAL TERCEIRIZACAO DE MAO DE OBRA LTDA") and not publico("SANTA CASA DE MISERICORDIA DE SOBRAL")

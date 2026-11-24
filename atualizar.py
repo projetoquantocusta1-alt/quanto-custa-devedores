@@ -123,7 +123,7 @@ def cruzar(ag: pgfn.Agregador, fontes: Path, tri: str) -> dict:
     linhas, detalhes = [], {}
     for rz, por_fonte in R.d.items():
         e = ag.emp.get(rz)
-        if not e:
+        if not e or cruzamento.publico(ag.nome.get(rz, "")):
             continue
         res = R.resumo_de(rz)
         rec = sum(x["v"] for x in res.values())
@@ -135,7 +135,8 @@ def cruzar(ag: pgfn.Agregador, fontes: Path, tri: str) -> dict:
     linhas.sort(key=lambda l: -l[4])
     tot = {"empresas": len(linhas), "divida": sum(l[4] for l in linhas), "cobranca": sum(l[5] for l in linhas), "recebido": sum(l[10] for l in linhas),
            "por_fonte": {f: [sum(l[11 + i] for l in linhas), sum(1 for l in linhas if l[11 + i])] for i, f in enumerate(cruzamento.FONTES)},
-           "fornecedores_lidos": len(R.d), "situacao": situacao}
+           "fornecedores_lidos": len(R.d), "situacao": situacao,
+           "emendas_por_natureza": {k: round(v) for k, v in sorted(R.naturezas.items(), key=lambda x: -x[1])[:25]}}
     # no site: as 2.500 maiores dívidas + os 2.500 que mais receberam (a ficha de qualquer outra continua em cruz/XX.json)
     sel = {l[0] for l in linhas[:2500]} | {l[0] for l in sorted(linhas, key=lambda l: -l[10])[:2500]}
     tot["no_site"] = len(sel)

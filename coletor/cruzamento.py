@@ -40,12 +40,28 @@ def _valor_br(s: str) -> float:
         return 0.0
 
 
+# órgãos e entes públicos (prefeituras, estados, fundos, INSS...) não são empresas: ficam fora do cruzamento
+PUBLICO = re.compile(r"\b(MUNICIPIO|PREFEITURA|ESTADO D[OAE]|GOVERNO D[OAE]|DISTRITO FEDERAL|FUNDO (MUNICIPAL|ESTADUAL|NACIONAL|DO REGIME|DE SAUDE|DE PREVID)|"
+                     r"SECRETARIA|CAMARA MUNICIPAL|ASSEMBLEIA LEGISLATIVA|TRIBUNAL|INSTITUTO NACIONAL DO SEGURO SOCIAL|AUTARQUIA|"
+                     r"CONSORCIO (PUBLICO|INTERMUNICIPAL)|UNIVERSIDADE (FEDERAL|ESTADUAL)|INSTITUTO FEDERAL|MINISTERIO|"
+                     r"SERVICO AUTONOMO|INSTITUTO DE PREVIDENCIA|REGIME (PROPRIO|GERAL) DE PREVIDENCIA)\b")
+# natureza jurídica de quem recebe emenda: entes públicos e os bancos públicos (Banco do Brasil, Caixa), que só repassam o dinheiro como agentes
+NATUREZA_FORA = re.compile(r"munic|estad|distrito|fundo|autarq|[oó]rg[aã]o|poder|p[uú]blic|economia mista|cons[oó]rcio|servi[cç]o social", re.I)
+
+
+def publico(nome: str) -> bool:
+    import unicodedata
+    n = unicodedata.normalize("NFKD", nome or "").encode("ascii", "ignore").decode().upper()
+    return bool(PUBLICO.search(n))
+
+
 class Recebimentos:
     """raiz -> fonte -> {"v": valor, "n": notas/pagamentos, "anos": set, "quem": {nome: valor}, "cnpj": cnpj}"""
 
     def __init__(self):
         self.d = defaultdict(dict)
         self.nomes = {}
+        self.naturezas = defaultdict(float)   # para conferência: valor por natureza jurídica (emendas)
 
     def add(self, fonte, doc, valor, ano, quem=None, n=1, nome=None):
         rz = raiz(doc)
@@ -71,6 +87,10 @@ class Recebimentos:
         with z.open(nome) as fh:
             for r in csv.DictReader(io.TextIOWrapper(fh, encoding="latin-1", newline=""), delimiter=";"):
                 if "jur" not in (r.get("Tipo Favorecido") or "").lower():
+                    continue
+                nat = (r.get("Natureza Jurídica") or "").strip()
+                self.naturezas[nat] += _valor_br(r.get("Valor Recebido"))
+                if NATUREZA_FORA.search(nat) or publico(r.get("Favorecido")):
                     continue
                 am = (r.get("Ano/Mês") or r.get("Ano/Mes") or "")[:4]
                 autor = (r.get("Nome do Autor da Emenda") or "").strip()
