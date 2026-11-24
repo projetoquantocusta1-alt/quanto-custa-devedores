@@ -7,6 +7,7 @@ from coletor.privacidade import mascarar_cpf_no_texto
 BASE = "https://dadosabertos.pgfn.gov.br/"
 S = requests.Session(); S.headers["User-Agent"] = "QuantoCusta/1.0 (painel de transparencia com dados abertos)"
 out = {}
+Path("dados_brutos").mkdir(exist_ok=True)
 idx = S.get(BASE, timeout=60).text
 tri = sorted(set(re.findall(r'href="(\d{4}_trimestre_\d{2})/"', idx)))[-1]
 out["trimestre"] = tri
